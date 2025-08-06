@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Marche Noble - متجر الأحذية</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
+  body {
+    font-family: 'Cairo', sans-serif;
+    background-color: #f5f1e8;
+    margin: 0; padding: 0;
+    color: #333;
+  }
+  header {
+    background-color: #bfa77f;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  header img.logo {
+    height: 50px;
+    border-radius: 8px;
+  }
+  header .title-images {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: white;
+    font-weight: bold;
+    font-size: 28px;
+  }
+  header .title-images img {
+    height: 40px;
+    border-radius: 6px;
+  }
+  nav {
+    background-color: #e8dbc9;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 10px;
+  }
+  nav a {
+    text-decoration: none;
+    color: #5a4632;
+    font-weight: bold;
+    font-size: 18px;
+  }
+  nav a:hover {
+    color: #927a43;
+  }
+  main {
+    max-width: 900px;
+    margin: 30px auto;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .product {
+    background: #fffaf3;
+    border-radius: 12px;
+    padding: 15px;
+    width: 250px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    text-align: center;
+    position: relative;
+  }
+  .product img {
+    max-width: 200px;
+    border-radius: 10px;
+    object-fit: cover;
+    height: 150px;
+  }
+  .product h3 {
+    margin: 10px 0 5px 0;
+    font-size: 20px;
+    color: #5a4632;
+  }
+  .product .price {
+    font-size: 18px;
+    color: #6d5a35;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  .btn-order {
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .btn-order:hover {
+    background-color: #3b8e3b;
+  }
+  /* Popup overlay */
+  #popupOverlay {
+    display: none;
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+  }
+  /* Order popup */
+  #orderPopup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fffaf3;
+    padding: 20px 25px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    width: 360px;
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 1000;
+  }
+  #orderPopup img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-bottom: 15px;
+  }
+  #orderPopup h3 {
+    margin: 0 0 10px 0;
+    color: #5a4632;
+    font-weight: bold;
+    font-size: 22px;
+    text-align: center;
+  }
+  #orderPopup label {
+    display: block;
+    margin: 10px 0 5px 0;
+    font-weight: bold;
+  }
+  #orderPopup input, #orderPopup select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    box-sizing: border-box;
+  }
+  #orderPopup input.error, #orderPopup select.error {
+    border-color: #f44336;
+    background-color: #ffe6e6;
+  }
+  .error-text {
+    color: #f44336;
+    font-size: 13px;
+    margin-top: 2px;
+  }
+  #orderPopup button {
+    margin-top: 15px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    cursor: pointer;
+    color: white;
+  }
+  #confirmBtn {
+    background-color: #4caf50;
+  }
+  #confirmationMessage {
+    display: none;
+    color: #4caf50;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: center;
+  }
+  #closePopupBtn {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #555;
+    cursor: pointer;
+    user-select: none;
+  }
+  #closePopupBtn:hover {
+    color: #f44336;
+  }
+  footer {
+    text-align: center;
+    margin: 30px 0 50px 0;
+  }
+  footer a {
+    margin: 0 10px;
+    display: inline-block;
+  }
+  footer img {
+    width: 40px;
+    height: 40px;
+    filter: grayscale(50%);
+    transition: filter 0.3s ease;
+  }
+  footer img:hover {
+    filter: none;
+  }
+</style>
+</head>
+<body>
+<header>
+  <img class="logo" src="https://i.imgur.com/Lq7fP5b.png" alt="Logo Marche Noble" />
+  <div class="title-images" style="color:#fff; gap:10px;">
+    <span>Marche Noble</span>
+    <img src="https://images.unsplash.com/photo-1528701800489-71ff2a058b16?auto=format&fit=crop&w=80&q=80" alt="حذاء نسائي" />
+    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=80&q=80" alt="حذاء رجالي" />
+    <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=80&q=80" alt="حذاء رسمي" />
+  </div>
+</header>
+<nav>
+  <a href="#">القائمة الرئيسية / Accueil</a>
+  <a href="#">أحذية نسائية / Chaussures Femme</a>
+  <a href="#">أحذية رجالية / Chaussures Homme</a>
+  <a href="#">متجر الأحذية / Boutique Chaussures</a>
+</nav>
+<main id="productsContainer">
+  <div class="product" data-name="حذاء كلاسيكي" data-img="https://images.unsplash.com/photo-1528701800489-71ff2a058b16?auto=format&fit=crop&w=400&q=80" data-price="120">
+    <img src="https://images.unsplash.com/photo-1528701800489-71ff2a058b16?auto=format&fit=crop&w=400&q=80" alt="حذاء كلاسيكي" />
+    <h3>حذاء كلاسيكي</h3>
+    <div class="price">120 دينار</div>
+    <button class="btn-order" onclick="openOrderPopup(this)">اطلب الآن</button>
+  </div>
+  <div class="product" data-name="حذاء رياضي" data-img="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80" data-price="150">
+    <img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=400&q=80" alt="حذاء رياضي" />
+    <h3>حذاء رياضي</h3>
+    <div class="price">150 دينار</div>
+    <button class="btn-order" onclick="openOrderPopup(this)">اطلب الآن</button>
+  </div>
+  <div class="product" data-name="حذاء رسمي" data-img="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=400&q=80" data-price="200">
+    <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=400&q=80" alt="حذاء رسمي" />
+    <h3>حذاء رسمي</h3>
+    <div class="price">200 دينار</div>
+    <button class="btn-order" onclick="openOrderPopup(this)">اطلب الآن</button>
+  </div>
+</main>
+
+<div id="popupOverlay"></div>
+<div id="orderPopup">
+  <div id="closePopupBtn" onclick="closeOrderPopup()">×</div>
+
+  <img id="popupProductImg" src="" alt="صورة المنتج" />
+  <h3 id="popupProductName"></h3>
+  <div class="price" id="popupProductPrice"></div>
+
+  <label for="customerName">الاسم الكامل / Nom complet</label>
+  <input type="text" id="customerName" placeholder="أدخل اسمك الكامل" />
+  <div class="error-text" id="errorName"></div>
+
+  <label for="customerPhone">رقم الهاتف / Téléphone</label>
+  <input type="text" id="customerPhone" placeholder="8 أرقام فقط" maxlength="8" />
+  <div class="error-text" id="errorPhone"></div>
+
+  <label for="customerWilaya">الولاية / Gouvernorat</label>
+  <select id="customerWilaya" onchange="updateDelegations()">
+    <option value="">-- اختر الولاية --</option>
+    <option value="تونس">تونس</option>
+    <option value="أريانة">أريانة</option>
+    <option value="بن عروس">بن عروس</option>
+    <option value="منوبة">منوبة</option>
+    <option value="نابل">نابل</option>
+    <option value="زغوان">زغوان</option>
+    <option value="بنزرت">بنزرت</option>
+    <option value="باجة">باجة</option>
+    <option value="جندوبة">جندوبة</option>
+    <option value="الكاف">الكاف</option>
+    <option value="سليانة">سليانة</option>
+    <option value="القيروان">القيروان</option>
+    <option value="سوسة">سوسة</option>
+    <option value="المنستير">المنستير</option>
+    <option value="المهدية">المهدية</option>
+    <option value="صفاقس">صفاقس</option>
+    <option value="سيدي بوزيد">سيدي بوزيد</option>
+    <option value="القصرين">القصرين</option>
+    <option value="قفصة">قفصة</option>
+    <option value="توزر">توزر</option>
+    <option value="قبلي">قبلي</option>
+    <option value="قابس">قابس</option>
+    <option value="مدنين">مدنين</option>
+    <option value="تطاوين">تطاوين</option>
+  </select>
+  <div class="error-text" id="errorWilaya"></div>
+
+  <label for="customerDelegation">المعتمدية / Délégation</label>
+  <select id="customerDelegation">
+    <option value="">-- اختر المعتمدية --</option>
+  </select>
+  <div class="error-text" id="errorDelegation"></div>
+
+  <label for="customerAddress">العنوان الكامل / Adresse complète</label>
+  <input type="text" id="customerAddress" placeholder="العنوان الكامل بالتفصيل" />
+  <div class="error-text" id="errorAddress"></div>
+
+  <label for="customerQuantity">عدد القطع / Quantité</label>
+  <input type="number" id="customerQuantity" value="1" min="1" />
+  <div class="error-text" id="errorQuantity"></div>
+
+  <div style="margin-top:10px; font-weight:bold; font-size:16px;">
+    السعر الأساسي: <span id="basePrice">0</span> دينار <br/>
+    تكلفة التوصيل: 7 دينار <br/>
+    السعر الإجمالي: <span id="totalPrice">0</span> دينار
+  </div>
+
+  <button id="confirmBtn" onclick="confirmOrder()">تأكيد الطلب / Confirmer la commande</button>
+
+  <div id="confirmationMessage">تم تأكيد الطلب! / Commande confirmée!</div>
+</div>
+
+<footer>
+  <a href="https://www.facebook.com/share/1738fhj9Ua/" target="_blank" rel="noopener noreferrer">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_(2019).png" alt="Facebook" />
+  </a>
+  <a href="https://www.instagram.com/marchenoble2025?igsh=b3Z2ZnByc2kxenl0" target="_blank" rel="noopener noreferrer">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram" />
+  </a>
+</footer>
+
+<script>
+  const popup = document.getElementById("orderPopup");
+  const overlay = document.getElementById("popupOverlay");
+  const popupImg = document.getElementById("popupProductImg");
+  const popupName = document.getElementById("popupProductName");
+  const popupPrice = document.getElementById("popupProductPrice");
+  const basePriceSpan = document.getElementById("basePrice");
+  const totalPriceSpan = document.getElementById("totalPrice");
+
+  let currentProductPrice = 0;
+  let orders = JSON.parse(localStorage.getItem("orders") || "[]");
+
+  function openOrderPopup(button) {
+    clearErrors();
+    const productDiv = button.closest(".product");
+    const name = productDiv.getAttribute("data-name");
+    const img = productDiv.getAttribute("data-img");
+    const price = parseFloat(productDiv.getAttribute("data-price"));
+
+    popupName.textContent = name;
+    popupImg.src = img;
+    popupPrice.textContent = price + " دينار";
+    currentProductPrice = price;
+
+    basePriceSpan.textContent = price.toFixed(2);
+    totalPriceSpan.textContent = (price + 7).toFixed(2);
+
+    // Reset form values
+    document.getElementById("customerName").value = "";
+    document.getElementById("customerPhone").value = "";
+    document.getElementById("customerWilaya").value = "";
+    updateDelegations(true);
+    document.getElementById("customerAddress").value = "";
+    document.getElementById("customerQuantity").value = 1;
+
+    popup.style.display = "block";
+    overlay.style.display = "block";
+  }
+
+  function closeOrderPopup() {
+    popup.style.display = "none";
+    overlay.style.display = "none";
+  }
+
+  function clearErrors() {
+    ["customerName", "customerPhone", "customerWilaya", "customerDelegation", "customerAddress", "customerQuantity"].forEach(id => {
+      document.getElementById(id).classList.remove("error");
+      document.getElementById("error" + id.replace("customer", "")).textContent = "";
+    });
+    document.getElementById("confirmationMessage").style.display = "none";
+  }
+
+  function validateInput() {
+    clearErrors();
+    let valid = true;
+
+    const name = document.getElementById("customerName").value.trim();
+    const phone = document.getElementById("customerPhone").value.trim();
+    const wilaya = document.getElementById("customerWilaya").value;
+    const delegation = document.getElementById("customerDelegation").value;
+    const address = document.getElementById("customerAddress").value.trim();
+    const quantity = document.getElementById("customerQuantity").value;
+
+    if (name.length < 3) {
+      showError("customerName", "الرجاء إدخال اسم صحيح / Veuillez saisir un nom valide");
+      valid = false;
+    }
+    if (!/^\d{8}$/.test(phone)) {
+      showError("customerPhone", "الرجاء إدخال رقم هاتف صحيح 8 أرقام / Veuillez saisir un téléphone valide (8 chiffres)");
+      valid = false;
+    }
+    if (!wilaya) {
+      showError("customerWilaya", "الرجاء اختيار الولاية / Veuillez choisir un gouvernorat");
+      valid = false;
+    }
+    if (!delegation) {
+      showError("customerDelegation", "الرجاء اختيار المعتمدية / Veuillez choisir une délégation");
+      valid = false;
+    }
+    if (address.length < 5) {
+      showError("customerAddress", "الرجاء إدخال العنوان الكامل / Veuillez saisir une adresse complète");
+      valid = false;
+    }
+    if (!(quantity > 0)) {
+      showError("customerQuantity", "الرجاء إدخال كمية صحيحة / Veuillez saisir une quantité valide");
+      valid = false;
+    }
+
+    return valid;
+  }
+
+  function showError(inputId, msg) {
+    const input = document.getElementById(inputId);
+    const errorDiv = document.getElementById("error" + inputId.replace("customer", ""));
+    input.classList.add("error");
+    errorDiv.textContent = msg;
+  }
+
+  function updateDelegations(clearOnly = false) {
+    const delegationsByWilaya = {
+      "تونس": ["المدينة", "باردو", "قرطاج", "المرسى"],
+      "أريانة": ["أريانة", "رواد", "سكرة"],
+      "بن عروس": ["بن عروس", "مقرين", "حلق الوادي"],
+      "منوبة": ["منوبة", "دوار هيشر", "أريانة الشمالية"],
+      "نابل": ["نابل", "دار شعبان الفهري", "بني خيار"],
+      "زغوان": ["زغوان", "الناظور", "بوسالم"],
+      "بنزرت": ["بنزرت", "غار الملح", "رأس الجبل"],
+      "باجة": ["باجة", "تستور", "سليمان"],
+      "جندوبة": ["جندوبة", "غمراسن", "غار الدماء"],
+      "الكاف": ["الكاف", "سبيطلة", "الفحص"],
+      "سليانة": ["سليانة", "ماجل بلعباس", "الرقاب"],
+      "القيروان": ["القيروان", "السبيخة", "الأشرافية"],
+      "سوسة": ["سوسة", "القنطاوي", "سهلول"],
+      "المنستير": ["المنستير", "الجم", "الطاهري"],
+      "المهدية": ["المهدية", "الجمّال", "بومرداس"],
+      "صفاقس": ["صفاقس", "جمال", "سيدي حسين"],
+      "سيدي بوزيد": ["سيدي بوزيد", "قصر السيد", "مجاز الباب"],
+      "القصرين": ["القصرين", "حيدرة", "تالة"],
+      "قفصة": ["قفصة", "المظيلة", "المسيلة"],
+      "توزر": ["توزر", "نفطة", "دقاش"],
+      "قبلي": ["قبلي", "الرديف", "تاجروين"],
+      "قابس": ["قابس", "مارث", "حومة السوق"],
+      "مدنين": ["مدنين", "حومة السوق", "جرجيس"],
+      "تطاوين": ["تطاوين", "رمادة", "حومة السوق"]
+    };
+    const wilaya = document.getElementById("customerWilaya").value;
+    const delegationSelect = document.getElementById("customerDelegation");
+    delegationSelect.innerHTML = '<option value="">-- اختر المعتمدية --</option>';
+    if (!clearOnly && delegationsByWilaya[wilaya]) {
+      delegationsByWilaya[wilaya].forEach(delegation => {
+        const opt = document.createElement("option");
+        opt.value = delegation;
+        opt.textContent = delegation;
+        delegationSelect.appendChild(opt);
+      });
+    }
+  }
+
+  document.getElementById("customerQuantity").addEventListener("input", () => {
+    const quantity = parseInt(document.getElementById("customerQuantity").value) || 1;
+    const baseTotal = currentProductPrice * quantity;
+    basePriceSpan.textContent = baseTotal.toFixed(2);
+    totalPriceSpan.textContent = (baseTotal + 7).toFixed(2);
+  });
+
+  function confirmOrder() {
+    if (!validateInput()) return;
+
+    const order = {
+      productName: popupName.textContent,
+      productImg: popupImg.src,
+      basePrice: currentProductPrice,
+      quantity: parseInt(document.getElementById("customerQuantity").value),
+      deliveryCost: 7,
+      baseTotal: currentProductPrice * parseInt(document.getElementById("customerQuantity").value),
+      finalTotal: currentProductPrice * parseInt(document.getElementById("customerQuantity").value) + 7,
+      customerName: document.getElementById("customerName").value.trim(),
+      customerPhone: document.getElementById("customerPhone").value.trim(),
+      customerWilaya: document.getElementById("customerWilaya").value,
+      customerDelegation: document.getElementById("customerDelegation").value,
+      customerAddress: document.getElementById("customerAddress").value.trim(),
+      orderDate: new Date().toISOString()
+    };
+
+    // حفظ الطلب محلياً (يمكن تعديل لتخزين بالخادم لاحقاً)
+    orders.push(order);
+    localStorage.setItem("orders", JSON.stringify(orders));
+
+    document.getElementById("confirmationMessage").style.display = "block";
+
+    setTimeout(() => {
+      closeOrderPopup();
+    }, 2500);
+  }
+</script>
+</body>
+</html>
+
